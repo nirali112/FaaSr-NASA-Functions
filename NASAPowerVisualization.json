@@ -1,0 +1,127 @@
+{
+  "ActionList": {
+    "GetData": {
+      "Arguments": {
+        "folder_name": "NASAPowerVisualization",
+        "output_name": "NASAPowerData.csv",
+        "lat": "44.5646",
+        "lon": "-123.2620",
+        "start": "20150101",
+        "end": "20260515",
+        "location_name": "Corvallis, OR"
+      },
+      "InvokeNext": [
+        "ProcessPrecipitation",
+        "ProcessTemperatureMin",
+        "ProcessTemperatureMax"
+      ],
+      "FaaSServer": "GH",
+      "Type": "Python",
+      "FunctionName": "get_nasa_power_data"
+    },
+    "ProcessPrecipitation": {
+      "Arguments": {
+        "folder_name": "NASAPowerVisualization",
+        "input_name": "NASAPowerData.csv",
+        "output_name": "PrecipitationData.csv",
+        "column_name": "PRECTOTCORR",
+        "start": "2026-03-01",
+        "end": "2026-05-01"
+      },
+      "InvokeNext": [
+        "PlotData"
+      ],
+      "FaaSServer": "GH",
+      "Type": "Python",
+      "FunctionName": "compare_to_yearly_average"
+    },
+    "ProcessTemperatureMin": {
+      "Arguments": {
+        "folder_name": "NASAPowerVisualization",
+        "input_name": "NASAPowerData.csv",
+        "output_name": "TemperatureMinData.csv",
+        "column_name": "T2M_MIN",
+        "start": "2026-03-01",
+        "end": "2026-05-01"
+      },
+      "InvokeNext": [
+        "PlotData"
+      ],
+      "FaaSServer": "GH",
+      "Type": "Python",
+      "FunctionName": "compare_to_yearly_average"
+    },
+    "ProcessTemperatureMax": {
+      "Arguments": {
+        "folder_name": "NASAPowerVisualization",
+        "input_name": "NASAPowerData.csv",
+        "output_name": "TemperatureMaxData.csv",
+        "column_name": "T2M_MAX",
+        "start": "2026-03-01",
+        "end": "2026-05-01"
+      },
+      "InvokeNext": [
+        "PlotData"
+      ],
+      "FaaSServer": "GH",
+      "Type": "Python",
+      "FunctionName": "compare_to_yearly_average"
+    },
+    "PlotData": {
+      "Arguments": {
+        "folder_name": "NASAPowerVisualization",
+        "input_precip_name": "PrecipitationData.csv",
+        "input_min_temp_name": "TemperatureMinData.csv",
+        "input_max_temp_name": "TemperatureMaxData.csv",
+        "location": "Corvallis, OR",
+        "output_name": "NASAPowerComparison.png"
+      },
+      "InvokeNext": [],
+      "FaaSServer": "GH",
+      "Type": "Python",
+      "FunctionName": "plot_weather_comparison"
+    }
+  },
+  "ComputeServers": {
+    "GH": {
+      "FaaSType": "GitHubActions",
+      "ActionRepoName": "FaaSr-workflow-pycharm",
+      "Branch": "main",
+      "UserName": "nirali112",
+      "UseSecretStore": true
+    }
+  },
+  "DataStores": {
+    "S3": {
+      "Endpoint": "https://play.min.io",
+      "Bucket": "faasr",
+      "Region": "us-east-1"
+    }
+  },
+  "ActionContainers": {
+    "GetData": "ghcr.io/faasr/github-actions-python:latest",
+    "ProcessPrecipitation": "ghcr.io/faasr/github-actions-python:latest",
+    "ProcessTemperatureMin": "ghcr.io/faasr/github-actions-python:latest",
+    "ProcessTemperatureMax": "ghcr.io/faasr/github-actions-python:latest",
+    "PlotData": "ghcr.io/faasr/github-actions-python:latest"
+  },
+  "FunctionInvoke": "GetData",
+  "DefaultDataStore": "S3",
+  "FunctionGitRepo": {
+    "get_nasa_power_data": "nirali112/FaaSr-NASA-Functions/python",
+    "compare_to_yearly_average": "nirali112/FaaSr-NASA-Functions/python",
+    "plot_weather_comparison": "nirali112/FaaSr-NASA-Functions/python"
+  },
+  "PyPIPackageDownloads": {
+    "compare_to_yearly_average": [
+      "pandas"
+    ],
+    "plot_weather_comparison": [
+      "pandas",
+      "matplotlib"
+    ]
+  },
+  "FaaSrLog": "FaaSrLog",
+  "LoggingDataStore": "S3",
+  "WorkflowName": "NASAPowerVisualization"
+}
